@@ -13,6 +13,7 @@ DealWithOperation(userOption, firstNumber, secondNumber);
 Console.WriteLine("Press any key to continue...");
 Console.ReadKey();
 
+
 void DealWithOperation(string u, int fn, int sn)
 {
     string operand = u == "a" ? "+" : u == "s" ? "-" : "*";
