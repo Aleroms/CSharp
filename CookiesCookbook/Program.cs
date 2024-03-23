@@ -9,22 +9,11 @@ var ingredients_list = new List<Ingredient>()
     new Chocolate(), new Sugar(), new Cardamom(),
     new Cinnamon(), new Cocoa()
 };
-var recipies = new List<Ingredient>();
+var currentRecipies = new List<Ingredient>();
+var recipies = new Recipie(format);
+recipies.DisplayAll();
 
-if(format == FileFormat.TXT && File.Exists("recipies.text"))
-{
-    var storedRecipies = Files.Read(format);
-    if(storedRecipies != null)
-    {
-        Console.WriteLine("Existing recipes are:");
-        foreach (var ingredient in storedRecipies)
-        {
-            Console.WriteLine($"**** {ingredient.Id + 1} ****");
 
-        }
-    }
-    
-}
 Console.WriteLine("Create a new cookie recipe! Available ingredients are:");
 foreach (Ingredient ingredient in ingredients_list)
 {
@@ -40,18 +29,10 @@ do
     
     recipeId--;
     if (Enum.IsDefined(typeof(IngredientType), recipeId)) 
-        recipies.Add(IdToItem.GetIngredient((IngredientType)recipeId));
+        currentRecipies.Add(IdToItem.GetIngredient((IngredientType)recipeId));
     
 
 
 } while (continueSelecting);
-Console.WriteLine("Recipe added:");
-foreach (Ingredient ingredient in recipies)
-{
-    if(ingredient is IRecipePreparation preparation)
-    {
-        Console.WriteLine($"{ingredient}. {preparation.Prepare()}");
-     
-    }
-}
-Files.Save(recipies, format);
+recipies.Add(currentRecipies);
+//Files.Save(recipies, format);

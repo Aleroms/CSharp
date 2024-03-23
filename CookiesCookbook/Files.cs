@@ -8,7 +8,9 @@ namespace CookieFiles
 
     public static class Files
     {
-        public static void Save(List<Ingredient> payload, FileFormat format)
+        private static readonly string _textPath = "recipies.text";
+        private static readonly string _jsonPath = "recipies.json";
+        public static void Save(List<List<Ingredient>> payload, FileFormat format)
         {
             if (FileFormat.JSON == format)
                 SaveAsJson(payload);
@@ -16,63 +18,79 @@ namespace CookieFiles
                 SaveAsText(payload);
 
         }
-        public static List<Ingredient> Read(FileFormat format)
+        public static List<List<Ingredient>> Read(FileFormat format)
         {
             return FileFormat.JSON == format ? ReadAsJson() : ReadAsText();
         }
 
-        private static List<Ingredient> ReadAsText()
+        public static List<string> LoadRecipies()
         {
-            var temp = File.ReadAllText("recipies.text").Split(Environment.NewLine);
-            var result = new List<Ingredient>();
-            foreach (var line in temp)
-            {
-                if (int.TryParse(line, out var id))
-                {
-                    result.Add(IdToItem.GetIngredient((IngredientType)id));
-                }
-            }
-            Console.WriteLine(temp);
-            return result;
+            return new List<string>();
         }
 
-        private static List<Ingredient> ReadAsJson()
+        private static List<List<Ingredient>> ReadAsText()
+        {
+            if (File.Exists(_textPath))
+            {
+                var temp = File.ReadAllText(_textPath).Split(Environment.NewLine);
+
+                var result = new List<List<Ingredient>>();
+                foreach (var line in temp)
+                {
+                    
+                    var recipieLine = line.Split(',');
+                    var recipieArr = new List<Ingredient>();
+                    foreach (var ingredient in recipieLine)
+                    {
+                        if (int.TryParse(ingredient, out var id))
+                        {
+                            recipieArr.Add(IdToItem.GetIngredient((IngredientType)id));
+                        }
+                    }
+                    result.Add(recipieArr);
+                }
+                
+                return result;
+            }
+            return new List<List<Ingredient>>();
+
+        }
+
+        private static List<List<Ingredient>> ReadAsJson()
         {
             throw new NotImplementedException();
         }
 
-        private static void SaveAsJson(List<Ingredient> payload)
+        private static void SaveAsJson(List<List<Ingredient>> payload)
         {
-            var path = "recipies.json";
+            /*var path = "recipies.json";
             var allIds = new List<string>();
             foreach (var ingredient in payload)
             {
                 allIds.Add(ingredient.Id.ToString());
             }
 
-            File.AppendAllText(path, JsonSerializer.Serialize(allIds));
+            File.AppendAllText(path, JsonSerializer.Serialize(allIds));*/
 
         }
-        private static void SaveAsText(List<Ingredient> payload)
+        private static void SaveAsText(List<List<Ingredient>> payload)
         {
-            var path = "recipies.text";
-            var allIds = new List<int>();
-            foreach (var ingredient in payload)
+            string recipiesAsString = "";
+            foreach(var recipe in payload)
             {
-                allIds.Add((int)ingredient.Id);
-            }
-            string recipiesAsString = string.Join(",", allIds);
-            Console.WriteLine(recipiesAsString);
 
-            File.AppendAllText(path, recipiesAsString + Environment.NewLine);
+                var allIds = new List<int>();
+                foreach(var ingredient in recipe)
+                {
+                    allIds.Add((int)ingredient.Id);
+                }
+                recipiesAsString += string.Join(',', allIds) + Environment.NewLine;
+
+            }
+            
+            Console.WriteLine(recipiesAsString);
+            File.WriteAllText(_textPath, recipiesAsString);
         }
+
     }
 }
-
-/*
- * 
-                    var asJson = JsonSerializer.Serialize(payload);
-                    Console.WriteLine(asJson);
-
-                    File.WriteAllText(path, asJson);
-  */
