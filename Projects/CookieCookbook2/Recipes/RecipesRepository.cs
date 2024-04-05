@@ -18,43 +18,31 @@ public class RecipesRepository : IRecipesRepository
 
     public List<Recipe> Read(string filePath)
     {
-        var recipesFromFile = _stringsRepository.Read(filePath);
-        var recipes = new List<Recipe>();
+        return _stringsRepository.Read(filePath)
+            .Select(stringsRepository => RecipeFromString(stringsRepository))
+            .ToList();
 
-        foreach (var recipeFromFile in recipesFromFile)
-        {
-            var recipe = RecipeFromString(recipeFromFile);
-            recipes.Add(recipe);
-        }
-        return recipes;
     }
 
     private Recipe RecipeFromString(string recipeFromFile)
     {
-        var textualIds = recipeFromFile.Split(Separator);
-        var ingredients = new List<Ingredient>();
+        var ingredients = recipeFromFile.Split(Separator)
+            .Select(int.Parse)
+            .Select(_ingredientsRegister.GetById);
 
-        foreach (var textualId in textualIds)
-        {
-            var id = int.Parse(textualId);
-            var ingredient = _ingredientsRegister.GetById(id);
-            ingredients.Add(ingredient);
-        }
         return new Recipe(ingredients);
     }
 
     public void Write(string filePath, List<Recipe> allRecipes)
     {
-        var recipesAsStrings = new List<string>();
-        foreach (var recipe in allRecipes)
-        {
-            var allIds = new List<int>();
-            foreach (var ingredient in recipe.Ingredients)
+        var recipesAsStrings = allRecipes
+            .Select(recipe =>
             {
-                allIds.Add(ingredient.Id);
-            }
-            recipesAsStrings.Add(string.Join(Separator, allIds));
-        }
-        _stringsRepository.Write(filePath, recipesAsStrings);
+                var allIds = recipe.Ingredients
+                .Select(ingredient => ingredient.Id);
+                return string.Join(Separator, allIds);
+            });
+
+        _stringsRepository.Write(filePath, recipesAsStrings.ToList());
     }
 }

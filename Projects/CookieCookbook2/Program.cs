@@ -24,3 +24,5 @@ var cookiesRecipesApp = new CookiesRecipesApp(
     );
 
 cookiesRecipesApp.Run(fileMetaData.ToPath());
+
+//IRecipesConsoleUserInteraction

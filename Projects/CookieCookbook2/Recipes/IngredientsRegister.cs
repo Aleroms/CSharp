@@ -16,12 +16,6 @@ public class IngredientsRegister : IIngredientsRegister
     new CocoaPowder(),
 };
 
-    public Ingredient GetById(int id)
-    {
-        foreach (var ingredient in All)
-        {
-            if (ingredient.Id == id) return ingredient;
-        }
-        return null;
-    }
+    public Ingredient GetById(int id) => 
+        All.FirstOrDefault(ingredient => ingredient.Id == id);
 }
