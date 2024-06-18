@@ -19,7 +19,8 @@ don't handle the null input in any way (let it throw an exception)
 
 public static List<int> TakeEverySecond(this List<int> input)
 {
-    var result = new List<int>();
+    // avoids reallocation by setting initially
+    var result = new List<int>(input.Count / 2 + 1);
     for (int i = 0; i < input.Length; i += 2)
     {
         result.Add(input[i]);
