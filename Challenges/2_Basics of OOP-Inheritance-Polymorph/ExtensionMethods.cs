@@ -21,7 +21,7 @@ public static List<int> TakeEverySecond(this List<int> input)
 {
     // avoids reallocation by setting initially
     var result = new List<int>(input.Count / 2 + 1);
-    for (int i = 0; i < input.Length; i += 2)
+    for (int i = 0; i < input.Count; i += 2)
     {
         result.Add(input[i]);
     }
